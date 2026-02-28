@@ -4,9 +4,18 @@ const connectDB = require("../src/config/db");
 let isConnected = false;
 
 module.exports = async (req, res) => {
-  if (!isConnected) {
-    await connectDB();
-    isConnected = true;
+  try {
+    if (!isConnected) {
+      await connectDB();
+      isConnected = true;
+    }
+    return app(req, res);
+  } catch (err) {
+    console.error("❌ Function crashed:", err);
+    return res.status(500).json({
+      ok: false,
+      message: "Serverless function crashed",
+      error: err?.message || String(err),
+    });
   }
-  return app(req, res);
 };
